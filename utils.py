@@ -133,7 +133,7 @@ def test(testloader, net, criterion):
             mean_loader = []
             inputs, targets = inputs.cuda(), targets.cuda(non_blocking=True)
             outputs = net(inputs)
-            import pdb;pdb.set_trace()
+            
             loss = criterion(outputs, targets)
 
             prec1, prec5 = accuracy(outputs.data, targets, topk=(1, 5))
@@ -144,9 +144,7 @@ def test(testloader, net, criterion):
 
             batch_time.update(time.time() - end)
             end = time.time()
-
-            if batch_idx == 0:
-                break
+    
     res = {
         'acc':top1.avg,
         'loss':losses.avg,
