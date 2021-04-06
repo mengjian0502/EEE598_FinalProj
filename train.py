@@ -17,7 +17,7 @@ from collections import OrderedDict, defaultdict
 from functools import partial
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-parser.add_argument('--model', type=str, choices=['mlp_mnist', 'cnn_mnist', 'cnn_mnist_fused'], help='model type')
+parser.add_argument('--model', type=str, choices=['mlp_mnist', 'cnn_mnist', 'cnn_mnist_q'], help='model type')
 parser.add_argument('--batch_size', type=int, default=64, metavar='N', help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=100, metavar='N', help='number of epochs to train (default: 14)')
 parser.add_argument('--lr', type=float, default=0.1, metavar='LR', help='learning rate (default: 0.1)')
@@ -33,6 +33,11 @@ parser.add_argument("--depth", required=True, type=int, nargs="+")
 parser.add_argument('--save_path', type=str, default='./save/', help='Folder to save checkpoints and log.')
 parser.add_argument('--resume', default='', type=str, help='path of the pretrained model')
 parser.add_argument('--evaluate', action='store_true', help='evaluate the model')
+
+# activation clipping(PACT)
+parser.add_argument('--clp', dest='clp', action='store_true', help='using clipped relu in each stage')
+parser.add_argument('--a_lambda', type=float, default=0.01, help='The parameter of alpha L2 regularization')
+
 args = parser.parse_args()
 
 args.use_cuda = torch.cuda.is_available()
@@ -117,7 +122,7 @@ def main():
             optimizer, epoch, args.gammas, args.schedule, args.lr, args.momentum)
 
         # Training phase
-        train_results = train(train_loader, model, criterion, optimizer)
+        train_results = train(train_loader, model, criterion, optimizer, args)
 
         # Test phase
         valid_results = test(valid_loader, model, criterion)

@@ -77,7 +77,7 @@ def accuracy(output, target, topk=(1,)):
             res.append(correct_k.mul_(100.0 / batch_size))
         return res
 
-def train(trainloader, net, criterion, optimizer):
+def train(trainloader, net, criterion, optimizer, args):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -97,6 +97,17 @@ def train(trainloader, net, criterion, optimizer):
     
         outputs = net(inputs)
         loss = criterion(outputs, targets)
+
+        if args.clp:
+            reg_alpha = torch.tensor(0.).cuda()
+            a_lambda = torch.tensor(args.a_lambda).cuda()
+
+            alpha = []
+            for name, param in net.named_parameters():
+                if 'alpha' in name:
+                    alpha.append(param.item())
+                    reg_alpha += param.item() ** 2
+            loss += a_lambda * (reg_alpha)
 
         optimizer.zero_grad()
         loss.backward()
