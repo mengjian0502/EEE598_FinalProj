@@ -17,7 +17,7 @@ from collections import OrderedDict, defaultdict
 from functools import partial
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-parser.add_argument('--model', type=str, choices=['mlp_mnist', 'cnn_mnist', 'cnn_mnist_q'], help='model type')
+parser.add_argument('--model', type=str, choices=['mlp_mnist', 'cnn_mnist', 'cnn_mnist_q', 'cnn_mnist_b'], help='model type')
 parser.add_argument('--batch_size', type=int, default=64, metavar='N', help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=100, metavar='N', help='number of epochs to train (default: 14)')
 parser.add_argument('--lr', type=float, default=0.1, metavar='LR', help='learning rate (default: 0.1)')
@@ -37,6 +37,9 @@ parser.add_argument('--evaluate', action='store_true', help='evaluate the model'
 # activation clipping(PACT)
 parser.add_argument('--clp', dest='clp', action='store_true', help='using clipped relu in each stage')
 parser.add_argument('--a_lambda', type=float, default=0.01, help='The parameter of alpha L2 regularization')
+
+# bnn
+parser.add_argument('--binary', dest='binary', action='store_true', help='bnn training')
 
 args = parser.parse_args()
 
@@ -78,7 +81,10 @@ def main():
     if args.use_cuda:
         model = model.cuda()
     
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    if args.binary:
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    else:
+        optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     criterion = nn.CrossEntropyLoss().cuda()
 
     # hook the output feature maps
@@ -108,8 +114,6 @@ def main():
         for i, (k,v) in enumerate(activations.items()):
             ofm = v[0].numpy()
             # import pdb;pdb.set_trace()
-            
-
         exit()
 
     # Training

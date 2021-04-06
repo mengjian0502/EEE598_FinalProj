@@ -7,15 +7,14 @@ if [ ! -d "$DIRECTORY" ]; then
     mkdir ./dataset
 fi
 
-model=cnn_mnist_q
+model=cnn_mnist_b
 epochs=30
 batch_size=128
 
-wd=2e-4
-lr=0.1
-drop_rate=0.5
+wd=1e-4
+lr=5e-3
 
-save_path="./save/${model}/${model}_lr${lr}_wd${wd}_binary/"
+save_path="./save/${model}/${model}_lr${lr}_wd${wd}/"
 log_file="${model}_lr${lr}_wd${wd}.log"
 
 $PYTHON -W ignore train.py \
@@ -29,5 +28,4 @@ $PYTHON -W ignore train.py \
     --depth 784 400 400 \
     --batch_size ${batch_size} \
     --weight_decay ${wd} \
-    --clp \
-    --a_lambda ${wd};
+    --binary;
