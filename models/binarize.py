@@ -49,9 +49,12 @@ class BinaryConv2d(nn.Conv2d):
 
         absE = self.weight.org.abs().mean()
         self.weight.data = Binarized(self.weight.org)
-        self.weight.data = self.weight.data.mul(absE)
+        if self.training:
+            self.weight.data = self.weight.data.mul(absE)
         
         out = F.conv2d(input, self.weight, bias=self.bias, stride=self.stride, padding=self.padding, groups=self.groups)
+        if not self.training:
+            out = out.mul(absE)
         return out
 
 class BinaryLinear(nn.Linear):
@@ -74,6 +77,7 @@ class TerneryHardTanh(nn.Module):
         self.inplace = inplace
 
     def forward(self, input):
+        # print(f"Range of the activation input: min = {input.min().item()}; max = {input.max().item()}")
         input = torch.nn.functional.hardtanh(input, 0, 1)
         input = STE.apply(input, self.inplace, 0.3)
         return input

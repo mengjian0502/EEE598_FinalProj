@@ -98,22 +98,10 @@ def main():
         state_dict = check_point['state_dict']
         model.load_state_dict(state_dict)
         logger.info(f"Successfully loaded {args.resume}, Pretrained acc = {check_point['acc']}")
-
-        # register hook
-        for name, m in model.named_modules():
-            if isinstance(m, nn.Conv2d):
-                m.register_forward_hook(partial(save_activation, name))
-                
         
         test_results= test(test_loader, model, criterion)
         test_acc = test_results['acc']
         logger.info(f'Test accuracy: {test_acc}')
-        
-        activations = {name: torch.cat(outputs, 0) for name, outputs in activations.items()}
-        
-        for i, (k,v) in enumerate(activations.items()):
-            ofm = v[0].numpy()
-            # import pdb;pdb.set_trace()
         exit()
 
     # Training

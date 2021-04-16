@@ -94,15 +94,12 @@ class AQ(nn.Module):
         self.alpha = nn.Parameter(torch.Tensor([alpha_init]))
 
     def forward(self, input):
-        if input.size(1) > 3:
-            input = torch.where(input < self.alpha, input, self.alpha)
+        input = torch.where(input < self.alpha, input, self.alpha)
 
-            n_lv = 2**self.abit - 1
-            scale = n_lv / self.alpha
+        n_lv = 2**self.abit - 1
+        scale = n_lv / self.alpha
 
-            a_float = RoundQuant.apply(input, scale)
-        else:
-            a_float = input
+        a_float = RoundQuant.apply(input, scale)
         return a_float
     
     def extra_repr(self):

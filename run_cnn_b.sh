@@ -7,7 +7,7 @@ if [ ! -d "$DIRECTORY" ]; then
     mkdir ./dataset
 fi
 
-model=cnn_mnist_b
+model=cnn_mnist_q
 epochs=30
 batch_size=128
 

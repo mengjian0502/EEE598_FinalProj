@@ -7,12 +7,12 @@ if [ ! -d "$DIRECTORY" ]; then
     mkdir ./dataset
 fi
 
-model=cnn_mnist
-batch_size=1
+model=cnn_mnist_b
+batch_size=128
 
 save_path="./save/${model}/${model}_lr${lr}_wd${wd}_eval/"
 log_file="${model}_eval.log"
-pretrianed_model="./save/cnn_mnist/cnn_mnist_lr0.1_wd2e-4_p0.5/checkpoint.pth.tar"
+pretrianed_model="./save/cnn_mnist_b/cnn_mnist_b_lr5e-3_wd1e-4/model_best.pth.tar"
 
 $PYTHON -W ignore train.py \
     --model ${model} \
